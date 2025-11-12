@@ -13,7 +13,6 @@
 
 #include "support.h"
 
-
 int __attribute__ ((used))
 main (int argc __attribute__ ((unused)),
       char *argv[] __attribute__ ((unused)))
@@ -34,8 +33,10 @@ main (int argc __attribute__ ((unused)),
 
   correct = verify_benchmark (result);
 
-  return (!correct);
+  asm volatile ("mv a0, %0" : : "r" (correct ? 1 : 0)); \
+  asm volatile ("ecall");      
 
+  return (!correct);
 }				/* main () */
 
 
