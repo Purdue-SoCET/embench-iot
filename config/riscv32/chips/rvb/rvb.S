@@ -12,11 +12,13 @@
 
 #define STACK_TOP (_end + RISCV_PGSIZE * 4)
 
-  .section ".text.init","ax",@progbits
+  .section ".text.start","ax",@progbits
   .globl _start
   .align 2
 _start:
   j handle_reset
+
+  .section ".text.init","ax",@progbits
 
   /* NMI vector */
   .align 2

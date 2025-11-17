@@ -33,7 +33,7 @@ main (int argc __attribute__ ((unused)),
 
   correct = verify_benchmark (result);
 
-  asm volatile ("mv a0, %0" : : "r" (correct ? 1 : 0)); \
+  asm volatile ("mv a0, %0" : : "r" (correct ? 1 : 11));  // 11 is not mapped to anything in the 
   asm volatile ("ecall");      
 
   return (!correct);

@@ -1,5 +1,6 @@
 /* Board support for generic AFTx07 board */
 
+#include "boardsupport.h"
 #include "format.h"
 #include <stdint.h>
 #include <support.h>

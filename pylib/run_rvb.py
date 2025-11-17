@@ -65,14 +65,14 @@ def build_benchmark_cmd(bench, args):
 
     subprocess.run(meminit_elf_cpy, cwd=bd_src)
     print(f"Running {bench}")
-    return [rvb_core, '--tohost-address', '2147487744' , '--max-sim-time', '429496729500', '--debug', '--notrace', bd_src + '/' + f'/{bench}.bin']
+    return [rvb_core, '--tohost-address', '2147487744' , '--max-sim-time', '429496729500', '--debug', '--notrace', bd_src + f'/{bench}.bin']
 
 def decode_results(stdout_str, stderr_str):
     print("================stdout================")
     print(stdout_str);
     print("======================================")
-    elapsed_cycles = int(re.findall(r"^Total Cycles: [0-9]+", stdout_str, re.MULTILINE)[0].split(" ")[2], 16)
-    elapsed_instrs = int(re.findall(r"^Total Instructions: [0-9]+", stdout_str, re.MULTILINE)[0].split(" ")[2], 16)
+    elapsed_cycles = int(re.findall(r"^Total Cycles: [0-9]+", stdout_str, re.MULTILINE)[0].split(" ")[2], 10)
+    elapsed_instrs = int(re.findall(r"^Total Instructions: [0-9]+", stdout_str, re.MULTILINE)[0].split(" ")[2], 10)
     if elapsed_cycles == 0:
         elapsed_cycles = 1
         elapsed_instrs = 1
@@ -82,6 +82,6 @@ def decode_results(stdout_str, stderr_str):
     print(f'Instructions: {elapsed_instrs}')
     print(f'Clocks: {elapsed_cycles}')
     print(f'IPC: {elapsed_instrs / elapsed_cycles}')
-    print('Returning result.\n')
+    print('Returning result.\n\n')
 
     return elapsed_cycles / cpu_mhz / 1000
