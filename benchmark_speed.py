@@ -214,7 +214,7 @@ def benchmark_speed(bench, target_args):
     # Process results
     if succeeded:
         exec_time = decode_results(
-            res.stdout.decode('utf-8'), res.stderr.decode('utf-8')
+            res.stdout.decode('utf-8'), res.stderr.decode('utf-8'), gp['absolute']
         )
         succeeded = exec_time > 0
 
@@ -315,13 +315,14 @@ def collect_data(benchmarks, remnant):
                     log.info(f'      "{bench}" : {output},')
         log.info('    },')
     elif gp['output_format'] == output_format.TEXT:
-        log.info('Benchmark           Speed')
+        test_type = " IPC " if gp['absolute'] else "Speed"
+        log.info(f'Benchmark           {test_type}')
         log.info('---------           -----')
         for bench in benchmarks:
             output = ''
             if (bench in raw_data and raw_data[bench] != 0.0):
                 if gp['absolute']:
-                    output = f'{round(raw_data[bench]):8,}'
+                    output = f'  {raw_data[bench]:4.4f}'
                 else:
                     output = f'  {rel_data[bench]:6.2f}'
             # Want relative results (the default). Only use non-zero values.

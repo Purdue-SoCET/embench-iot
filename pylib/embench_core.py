@@ -20,8 +20,10 @@ server to use as a target.
 
 import logging
 import math
+import numpy
 import os
 import re
+import scipy
 import sys
 import time
 from enum import Enum
@@ -224,7 +226,7 @@ def compute_georange(geomean, geosd, count):
     return georange
 
 
-def output_stats(geomean, geosd, georange, count, bm_type, opt_comma):
+def output_stats(geomean, geosd, georange, hmean, amean, asd, count, bm_type, opt_comma):
     """Output the statistical summary.
 
        Note that we manually generate the JSON output, rather than using the
@@ -234,17 +236,23 @@ def output_stats(geomean, geosd, georange, count, bm_type, opt_comma):
     geomean_op = ''
     geosd_op = ''
     georange_op = ''
+    hmean_op = ''
+    amean_op = ''
+    asd_op = ''
 
     if count > 0:
         if gp['absolute']:
             if gp['output_format'] == output_format.JSON:
-                geomean_op = '{gm}'.format(gm=round(geomean))
-                geosd_op = '{gs:.2f}'.format(gs=geosd)
+                geomean_op = '{gm:.4f}'.format(gm=geomean)
+                geosd_op = '{gs:.4f}'.format(gs=geosd)
             elif gp['output_format'] == output_format.TEXT:
-                geomean_op = '{gm:8,}'.format(gm=round(geomean))
-                geosd_op = '     {gs:6.2f}'.format(gs=geosd)
+                geomean_op = '  {gm:4.4f}'.format(gm=geomean)
+                geosd_op = '  {gs:4.4f}'.format(gs=geosd)
 
-            georange_op = '{gr:8,}'.format(gr=georange)
+            georange_op = '  {gr:4.4f}'.format(gr=georange)
+            hmean_op = '  {hm:4.4f}'.format(hm=hmean)
+            amean_op = '  {am:4.4f}'.format(am=amean)
+            asd_op = '  {sd:4.4f}'.format(sd=asd)
         else:
             if gp['output_format'] == output_format.JSON:
                 geomean_op = '{gm:.2f}'.format(gm=geomean)
@@ -254,10 +262,16 @@ def output_stats(geomean, geosd, georange, count, bm_type, opt_comma):
                 geosd_op = '  {gs:6.2f}'.format(gs=geosd)
 
             georange_op = '  {gr:6.2f}'.format(gr=georange)
+            hmean_op = '  {hm:6.2f}'.format(hm=hmean)
+            amean_op = '  {am:6.2f}'.format(am=amean)
+            asd_op = '  {sd:6.2f}'.format(sd=asd)
     else:
         geomean_op = ' -   '
         geosd_op = ' -   '
         georange_op = ' -    '
+        hmean_op = ' -   '
+        amean_op = ' -   '
+        asd_op = ' -   '
 
     # Output the results
     if gp['output_format'] == output_format.JSON:
@@ -269,6 +283,9 @@ def output_stats(geomean, geosd, georange, count, bm_type, opt_comma):
         log.info('Geometric mean   {gmo:8}'.format(gmo=geomean_op))
         log.info('Geometric SD     {gso:8}'.format(gso=geosd_op))
         log.info('Geometric range  {gro:8}'.format(gro=georange_op))
+        log.info('Harmonic mean    {hmo:8}'.format(hmo=hmean_op))
+        log.info('Arthimetic mean  {amo:8}'.format(amo=amean_op))
+        log.info('Arithmetic SD    {aso:8}'.format(aso=asd_op))
 
 
 def embench_stats(benchmarks, raw_data, rel_data, bm_type, opt_comma):
@@ -276,7 +293,17 @@ def embench_stats(benchmarks, raw_data, rel_data, bm_type, opt_comma):
     geomean, count = compute_geomean(benchmarks, raw_data, rel_data)
     geosd = compute_geosd(benchmarks, raw_data, rel_data, geomean, count)
     georange = compute_georange(geomean, geosd, count)
-    output_stats(geomean, geosd, georange, count, bm_type, opt_comma)
+
+    data_vals = []
+    if gp['absolute']:
+        data_vals = list(raw_data.values())
+    else:
+        data_vals = list(rel_data.values())
+
+    hmean = scipy.stats.hmean(data_vals)
+    amean = numpy.mean(data_vals)
+    asd = numpy.std(data_vals, mean=amean)
+    output_stats(geomean, geosd, georange, hmean, amean, asd, count, bm_type, opt_comma)
 
 
 def arglist_to_str(arglist):

@@ -67,7 +67,7 @@ def build_benchmark_cmd(bench, args):
     print(f"Running {bench}")
     return [rvb_core, '--tohost-address', '2147487744' , '--max-sim-time', '429496729500', '--debug', '--notrace', bd_src + f'/{bench}.bin']
 
-def decode_results(stdout_str, stderr_str):
+def decode_results(stdout_str, stderr_str, absolute):
     print("================stdout================")
     print(stdout_str);
     print("======================================")
@@ -78,10 +78,12 @@ def decode_results(stdout_str, stderr_str):
         elapsed_instrs = 1
 
     global cpu_mhz
-    print(f'Speed: {elapsed_cycles / cpu_mhz / 1000}')
+    speed = elapsed_cycles / cpu_mhz / 1000
+    ipc = elapsed_instrs / elapsed_cycles
+    print(f'Speed: {speed}')
     print(f'Instructions: {elapsed_instrs}')
     print(f'Clocks: {elapsed_cycles}')
-    print(f'IPC: {elapsed_instrs / elapsed_cycles}')
+    print(f'IPC: {ipc}')
     print('Returning result.\n\n')
 
-    return elapsed_cycles / cpu_mhz / 1000
+    return ipc if absolute else speed
