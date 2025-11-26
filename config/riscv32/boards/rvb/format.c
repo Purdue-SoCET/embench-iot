@@ -122,7 +122,6 @@ void __attribute__((noinline)) format(const char *fmt, char *buf, ...) {
 }
 
 void __attribute__((noinline)) print_string(const char *s) {
-    volatile uint64_t *tohost_addr = (volatile uint64_t *)0x80001000;
     for (int i = 0; s[i]; i++) {
         tohost = 0x0101000000000000 | (uint64_t)((char)(s[i]));
         asm volatile ("fence.i" : : :);
