@@ -1,8 +1,9 @@
 #ifndef CHIPSUPPORT_H
 #define CHIPSUPPORT_H
 
+#define CUSTOM_PRINT_STRING
+
 #define __riscv_xlen 32
-#define TOHOST_ADDR 0x00001000
 
 #ifndef RISCV_CSR_ENCODING_H
 #define RISCV_CSR_ENCODING_H

@@ -10,7 +10,8 @@
 # define REGBYTES 4
 #endif
 
-#define STACK_TOP (_end + RISCV_PGSIZE * 4)
+// #define STACK_TOP (_end + RISCV_PGSIZE * 4)
+#define STACK_TOP (0x800F0000)
 
   .section ".text.start","ax",@progbits
   .globl _start

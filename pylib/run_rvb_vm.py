@@ -65,7 +65,7 @@ def build_benchmark_cmd(bench, args):
 
     subprocess.run(meminit_elf_cpy, cwd=bd_src)
     print(f"Running {bench}")
-    return [rvb_core, '--tohost-address', '2147487744' , '--max-sim-time', '429496729500', '--debug', '--notrace', '--memlat', '2', bd_src + f'/{bench}.bin']
+    return [rvb_core, '--tohost-address', '2147487744' , '--max-sim-time', '429496729500', '--debug', '--notrace', '--memlat', '0', bd_src + f'/{bench}.bin']
 
 def decode_results(stdout_str, stderr_str, absolute):
     print("================stdout================")

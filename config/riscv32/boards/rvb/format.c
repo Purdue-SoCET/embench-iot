@@ -1,4 +1,5 @@
 #include "format.h"
+#include "chipsupport.h"
 #include <stdarg.h>
 #include <stdint.h>
 
@@ -121,9 +122,16 @@ void __attribute__((noinline)) format(const char *fmt, char *buf, ...) {
     va_end(args);
 }
 
+#ifdef CUSTOM_PRINT_STRING
+void __attribute__((noinline)) print_string(const char *s) {
+    asm volatile ("mv a0, %0" : : "r" (s));
+    asm volatile ("ecall");
+}
+#else
 void __attribute__((noinline)) print_string(const char *s) {
     for (int i = 0; s[i]; i++) {
         tohost = 0x0101000000000000 | (uint64_t)((char)(s[i]));
         asm volatile ("fence.i" : : :);
     }
 }
+#endif
